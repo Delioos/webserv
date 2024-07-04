@@ -13,21 +13,19 @@ fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
     let pool = ThreadPool::new(8);
 
-    for _stream in listener.incoming() {
-        let stream = _stream.unwrap();
+    for stream in listener.incoming().take(2) {
+        let stream = stream.unwrap();
 
         pool.execute(|| {
             handle_connection(stream);
         });
+
+        println!("Shutting down.")
     }
 }
 
-// --snip--
-
-// --snip--
 
 fn handle_connection(mut stream: TcpStream) {
-    // --snip--
 
     let buf_reader = BufReader::new(&mut stream);
     let request_line = buf_reader.lines().next().unwrap().unwrap();
